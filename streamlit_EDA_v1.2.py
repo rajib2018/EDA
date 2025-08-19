@@ -47,7 +47,7 @@ if 'dataframe' in st.session_state:
 
     visualization_type = st.selectbox(
         'Select visualization type:',
-        ['Histogram', 'Box Plot', 'Scatter Plot']
+        ['Histogram', 'Box Plot', 'Scatter Plot', 'Violin Plot', 'Count Plot']
     )
 
     if visualization_type == 'Histogram':
@@ -83,6 +83,29 @@ if 'dataframe' in st.session_state:
                 st.write("Please select different columns for x and y axes.")
         else:
             st.write("Need at least two numerical columns for a scatter plot.")
+
+    elif visualization_type == 'Violin Plot':
+        numerical_cols = df.select_dtypes(include=np.number).columns.tolist()
+        categorical_cols = df.select_dtypes(include='object').columns.tolist()
+        if numerical_cols and categorical_cols:
+            x_column = st.selectbox('Select a categorical column for x-axis:', categorical_cols)
+            y_column = st.selectbox('Select a numerical column for y-axis:', numerical_cols)
+            fig, ax = plt.subplots()
+            sns.violinplot(x=df[x_column], y=df[y_column], ax=ax)
+            st.pyplot(fig)
+        else:
+            st.write("Need at least one numerical and one categorical column for a violin plot.")
+
+    elif visualization_type == 'Count Plot':
+        categorical_cols = df.select_dtypes(include='object').columns.tolist()
+        if categorical_cols:
+            selected_column = st.selectbox('Select a categorical column for count plot:', categorical_cols)
+            fig, ax = plt.subplots()
+            sns.countplot(x=df[selected_column], ax=ax)
+            plt.xticks(rotation=90) # Rotate labels for better readability
+            st.pyplot(fig)
+        else:
+            st.write("No categorical columns found for count plot.")
 
 else:
     st.write("Please upload a data file to visualize.")
