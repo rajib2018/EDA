@@ -29,6 +29,22 @@ if 'dataframe' in st.session_state:
     df = st.session_state['dataframe']
     st.write("### Data Visualization")
 
+    # Visualization Recommendations
+    st.write("#### Visualization Recommendations:")
+    numerical_cols = df.select_dtypes(include=np.number).columns.tolist()
+    categorical_cols = df.select_dtypes(include='object').columns.tolist()
+    date_cols = df.select_dtypes(include=np.datetime64).columns.tolist()
+
+    if numerical_cols:
+        st.write(f"- **Numerical Data:** Consider Histograms or Box Plots for single numerical columns, and Scatter Plots for relationships between two numerical columns.")
+    if categorical_cols:
+        st.write(f"- **Categorical Data:** Consider Bar Plots or Count Plots to visualize the distribution of categories.")
+    if date_cols:
+        st.write(f"- **Date Data:** Consider Time Series Plots to visualize trends over time.")
+    if numerical_cols and categorical_cols:
+         st.write(f"- **Numerical and Categorical Data:** Consider Box Plots or Violin Plots to compare numerical distributions across categories.")
+
+
     visualization_type = st.selectbox(
         'Select visualization type:',
         ['Histogram', 'Box Plot', 'Scatter Plot']
