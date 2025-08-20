@@ -8,8 +8,8 @@ Generic EDA Tool is an interactive web application for quick exploratory analysi
 
 **Data Display:** Renders uploaded data as an interactive dataframe.
 
-**Summary Statistics: ** Computes and displays standard descriptive statistics for all columns.
+**Summary Statistics:** Computes and displays standard descriptive statistics for all columns.
 
-**Missing Values: ** Summarizes missing (null) values for each column.
+**Missing Values:** Summarizes missing (null) values for each column.
 
 **Data Visualization:** Offers Histogram, Box Plot, and Scatter Plot for numerical columns with interactive selection.
