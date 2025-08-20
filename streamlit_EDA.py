@@ -33,7 +33,7 @@ if 'dataframe' in st.session_state:
 
 if 'dataframe' in st.session_state:
     df = st.session_state['dataframe']
-    st.write("### Data Visualization")
+    st.write("Data Visualization")
 
 
     visualization_type = st.selectbox(
