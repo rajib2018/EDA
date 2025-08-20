@@ -6,7 +6,7 @@ import seaborn as sns
 
 st.title('Generic EDA Tool')
 
-uploaded_file = st.file_uploader('Upload your data (CSV)')
+uploaded_file = st.file_uploader('Upload your data (CSV) for Exploratory Data Analysis (EDA)')
 
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
@@ -75,5 +75,5 @@ if 'dataframe' in st.session_state:
         else:
             st.write("Need at least two numerical columns for a scatter plot.")
 
-else:
-    st.write("Please upload a data file to visualize.")
+#else:
+    #st.write("Please upload a data file to visualize.")
