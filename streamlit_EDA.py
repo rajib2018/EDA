@@ -1,65 +1,85 @@
 import streamlit as st
-from pbixray.core import PBIXRay
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-def sizeof_fmt(num, suffix="B"):
-    for unit in ("", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"):
-        if abs(num) < 1024.0:
-            return f"{num:3.1f}{unit}{suffix}"
-        num /= 1024.0
-    return f"{num:.1f}Yi{suffix}"
+if 'dataframe' in st.session_state:
+    st.write("Displaying the uploaded data:")
+    st.dataframe(st.session_state['dataframe'])
+else:
+    st.write("Please upload a data file to display.")
 
-def app():
-    st.title("PBIX info")
+if 'dataframe' in st.session_state:
+    st.write("Summary Statistics:")
+    st.write(st.session_state['dataframe'].describe())
+else:
+    st.write("Please upload a data file to see summary statistics.")
 
-    uploaded_file = st.file_uploader("Choose a PBIX file", type="pbix")
-    if uploaded_file:
-        # Unpack the PBIX file to get the schema_df
-        model = PBIXRay(uploaded_file)
+if 'dataframe' in st.session_state:
+    st.write("Missing Values:")
+    st.write(st.session_state['dataframe'].isnull().sum())
+else:
+    st.write("Please upload a data file to see missing values.")
 
+if 'dataframe' in st.session_state:
+    df = st.session_state['dataframe']
+    st.write("### Data Visualization")
 
-        st.write(model.metadata)
-        
-        met1, met2 = st.columns(2)
-        
-        met1.metric(label='Model size', value = sizeof_fmt(model.size))
-        met2.metric(label='# Tables', value = model.tables.size)
+    # Visualization Recommendations
+    st.write("#### Visualization Recommendations:")
+    numerical_cols = df.select_dtypes(include=np.number).columns.tolist()
+    categorical_cols = df.select_dtypes(include='object').columns.tolist()
+    date_cols = df.select_dtypes(include=np.datetime64).columns.tolist()
 
-        st.write("Schema:")
-        st.write(model.schema)
-
-        st.write("Statistics:")
-        st.dataframe(model.statistics)
-
-        if model.relationships.size:
-            st.write("Relationships:")
-            st.write(model.relationships)
-
-        if model.power_query.size:
-            st.write("Power Query code:")
-            st.dataframe(model.power_query)
-
-        if model.m_parameters.size:
-            st.write("M parameters:")
-            st.dataframe(model.m_parameters)
-
-        if model.dax_tables.size:
-            st.write("DAX tables:")
-            st.dataframe(model.dax_tables)
-        
-        if model.dax_measures.size:
-            st.write("DAX measures:")
-            st.dataframe(model.dax_measures)
-
-        if model.dax_columns.size:
-            st.write("Calculated columns:")
-            st.dataframe(model.dax_columns)
-            
-        # Let the user select a table name
-        table_name_input = st.selectbox("Select a table to peek at its contents:", model.tables)
-
-        if st.button("Un-VertiPaq"):
-            st.dataframe(model.get_table(table_name_input), use_container_width=True)
+    if numerical_cols:
+        st.write(f"- **Numerical Data:** Consider Histograms or Box Plots for single numerical columns, and Scatter Plots for relationships between two numerical columns.")
+    if categorical_cols:
+        st.write(f"- **Categorical Data:** Consider Bar Plots or Count Plots to visualize the distribution of categories.")
+    if date_cols:
+        st.write(f"- **Date Data:** Consider Time Series Plots to visualize trends over time.")
+    if numerical_cols and categorical_cols:
+         st.write(f"- **Numerical and Categorical Data:** Consider Box Plots or Violin Plots to compare numerical distributions across categories.")
 
 
-if __name__ == '__main__':
-    app()
+    visualization_type = st.selectbox(
+        'Select visualization type:',
+        ['Histogram', 'Box Plot', 'Scatter Plot']
+    )
+
+    if visualization_type == 'Histogram':
+        numerical_cols = df.select_dtypes(include=np.number).columns.tolist()
+        if numerical_cols:
+            selected_column = st.selectbox('Select a numerical column for histogram:', numerical_cols)
+            fig, ax = plt.subplots()
+            sns.histplot(df[selected_column], ax=ax, kde=True)
+            st.pyplot(fig)
+        else:
+            st.write("No numerical columns found for histogram.")
+
+    elif visualization_type == 'Box Plot':
+        numerical_cols = df.select_dtypes(include=np.number).columns.tolist()
+        if numerical_cols:
+            selected_column = st.selectbox('Select a numerical column for box plot:', numerical_cols)
+            fig, ax = plt.subplots()
+            sns.boxplot(y=df[selected_column], ax=ax)
+            st.pyplot(fig)
+        else:
+            st.write("No numerical columns found for box plot.")
+
+    elif visualization_type == 'Scatter Plot':
+        numerical_cols = df.select_dtypes(include=np.number).columns.tolist()
+        if len(numerical_cols) >= 2:
+            x_column = st.selectbox('Select a numerical column for x-axis:', numerical_cols)
+            y_column = st.selectbox('Select a numerical column for y-axis:', numerical_cols)
+            if x_column != y_column:
+                fig, ax = plt.subplots()
+                sns.scatterplot(x=df[x_column], y=df[y_column], ax=ax)
+                st.pyplot(fig)
+            else:
+                st.write("Please select different columns for x and y axes.")
+        else:
+            st.write("Need at least two numerical columns for a scatter plot.")
+
+else:
+    st.write("Please upload a data file to visualize.")
