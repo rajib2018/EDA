@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+st.set_page_config(layout="wide")
+
 st.title('Generic EDA Tool')
 
 uploaded_file = st.file_uploader('Upload your data (CSV) for Exploratory Data Analysis (EDA)')
