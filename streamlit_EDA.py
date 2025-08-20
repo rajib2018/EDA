@@ -16,20 +16,20 @@ if uploaded_file is not None:
 if 'dataframe' in st.session_state:
     st.write("Displaying the uploaded data:")
     st.dataframe(st.session_state['dataframe'])
-else:
-    st.write("Please upload a data file to display.")
+#else:
+    #st.write("Please upload a data file to display.")
 
 if 'dataframe' in st.session_state:
     st.write("Summary Statistics:")
     st.write(st.session_state['dataframe'].describe())
-else:
-    st.write("Please upload a data file to see summary statistics.")
+#else:
+    #st.write("Please upload a data file to see summary statistics.")
 
 if 'dataframe' in st.session_state:
     st.write("Missing Values:")
     st.write(st.session_state['dataframe'].isnull().sum())
-else:
-    st.write("Please upload a data file to see missing values.")
+#else:
+    #st.write("Please upload a data file to see missing values.")
 
 if 'dataframe' in st.session_state:
     df = st.session_state['dataframe']
